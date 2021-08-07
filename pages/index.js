@@ -6,6 +6,16 @@ export default function Home() {
   const [playClickSoundFx] = useSound('./button-click-soundfx.mp3');
   const [playReleaseSoundFx] = useSound('./button-release-soundfx.mp3');
 
+  function handleClick() {
+    navigator.vibrate(20);
+    playClickSoundFx();
+  }
+
+  function handleRelease() {
+    navigator.vibrate(100);
+    playReleaseSoundFx();
+  }
+
   return (
     <div className="text-imsetyBlack dark:text-imsetyWhite bg-imsetyWhite dark:bg-imsetyBlack">
       <Head>
@@ -15,8 +25,8 @@ export default function Home() {
 
       <main className="flex  w-full h-full min-w-screen min-h-screen">
         <motion.div
-          onTapStart={playClickSoundFx}
-          onTap={playReleaseSoundFx}
+          onTapStart={handleClick}
+          onTap={handleRelease}
           whileHover={{ scale: 1.1 }}
           transition={{ type: 'spring', duration: 0.6, bounce: 0.5 }}
           className="m-auto"
