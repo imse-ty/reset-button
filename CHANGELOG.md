@@ -16,6 +16,6 @@
 
 Initial development! 🥳🎉
 
-[unreleased]: https://github.com/imse-ty/sety.media/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/imse-ty/sety.media/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/imse-ty/sety.media/releases/tag/v0.1.0
+[unreleased]: https://github.com/imse-ty/reset-button/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/imse-ty/reset-button/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/imse-ty/reset-button/releases/tag/v0.1.0
