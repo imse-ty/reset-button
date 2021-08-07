@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- The button now plays a satisfying when pressed. ([#1])
+
+[#1]: https://github.com/imse-ty/reset-button/issues/1
+
 ## [0.1.0] - 2021-08-02
 
 Initial development! 🥳🎉
