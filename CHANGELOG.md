@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2021-08-06
+
 ### Added
 
 - The button now plays a satisfying when pressed. ([#1])
@@ -14,5 +16,6 @@
 
 Initial development! 🥳🎉
 
-[unreleased]: https://github.com/imse-ty/sety.media/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/imse-ty/sety.media/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/imse-ty/sety.media/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/imse-ty/sety.media/releases/tag/v0.1.0
