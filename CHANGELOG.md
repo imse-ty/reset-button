@@ -5,8 +5,10 @@
 ### Added
 
 - The button now plays a satisfying when pressed. ([#1])
+- Haptic feedback on supported devices and browsers. ([#3])
 
 [#1]: https://github.com/imse-ty/reset-button/issues/1
+[#3]: https://github.com/imse-ty/reset-button/issues/3
 
 ## [0.1.0] - 2021-08-02
 
