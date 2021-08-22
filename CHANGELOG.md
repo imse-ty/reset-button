@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added instructions how to use the reset button to `README.md`.
+
 ## [0.2.0] - 2021-08-06
 
 ### Added
