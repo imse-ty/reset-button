@@ -61,6 +61,18 @@ Pushes are only queued while the app is out of view, so you don't get notified a
 
 Closing the app never ends a door. It completes and is banked the next time you open Reset Button on any device.
 
+## Daily reminders
+
+Turning on notifications also creates one hourly QStash schedule (`reset-remind`) that calls `/api/remind`. Between 7am and 7pm in your timezone (taken from the device that last tapped **Turn on**), it sends at most one of these per hour:
+
+| When | Reminder |
+| --- | --- |
+| 7am, if idle days cost you energy | "Energy decayed" (or "Heat death" if good energy hit 0) |
+| 7pm, if you haven't started today | "No start today yet", with what you'll lose at midnight |
+| Any hour, at least 2 hours after your last reminder or finished door | "Time to start something" |
+
+Nothing is sent while a door is running. The hours and gap live in `lib/reminders.js`. To stop reminders, delete the `reset-remind` schedule in the QStash console. It's recreated the next time you tap **Turn on** or **Reconnect**.
+
 ## Development
 
 ```bash

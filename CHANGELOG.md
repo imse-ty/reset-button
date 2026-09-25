@@ -2,6 +2,12 @@
 
 > Versions jump from 0.2.0 to 0.3.0 despite the size of that release: it was briefly numbered 2.0.0, then 1.0.0, before settling back into the 0.x line since this project has no stability guarantees yet.
 
+## [Unreleased]
+
+### Added
+
+- Reminder notifications between 7am and 7pm in your timezone: a nudge to start something every couple of hours, a morning notice when idle days decayed your energy (or caused heat death), and a 7pm warning if you haven't started yet today.
+
 ## [0.4.0] - 2026-09-25
 
 ### Added
