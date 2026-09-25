@@ -1,6 +1,23 @@
 # Changelog
 
-## [2.0.0] - 2026-09-25
+> Versions jump from 0.2.0 to 0.3.0 despite the size of that release: it was briefly numbered 2.0.0, then 1.0.0, before settling back into the 0.x line since this project has no stability guarantees yet.
+
+## [0.4.0] - 2026-09-25
+
+### Added
+
+- Click and release sound effects are back on the button.
+
+### Changed
+
+- The button now behaves like the original fidget toy: a quick tap always plays the click/release sounds without starting anything, and only a hold past ~220ms starts the two-minute door.
+- Restored the original bouncy spring animation on press and release.
+
+### Fixed
+
+- Sounds could fail to load or play on the first press, especially on iOS and Android, because audio was only unlocked mid-press. It's now unlocked on any tap, key press or release, matching what touch browsers require.
+
+## [0.3.0] - 2026-09-25
 
 ### Added
 
