@@ -39,6 +39,12 @@
 
 - The button no longer breaks on iPhone, where `navigator.vibrate` doesn't exist.
 
+## [0.2.1] - 2021-08-22
+
+### Added
+
+- Added instructions how to use the reset button to `README.md`.
+
 ## [0.2.0] - 2021-08-06
 
 ### Added
