@@ -4,6 +4,7 @@ import * as E from '../lib/energy';
 import * as C from '../lib/client';
 
 const HOLD_MS = 1600;
+const TAP_MS = 220;
 const POLL_MS = 20000;
 const TITLE = 'Reset Button';
 
@@ -32,6 +33,7 @@ export default function Home() {
   const [shown, setShown] = useState({ task: '', step: '' });
   const [result, setResult] = useState(null);
   const [armed, setArmed] = useState(false);
+  const [pressed, setPressed] = useState(false);
   const [sync, setSync] = useState('Saved on this device');
   const [popKey, setPopKey] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -133,6 +135,11 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
     C.registerSW();
+    C.loadSounds();
+    // Touch browsers only allow audio after a finger lift or keypress, so unlock on any of them.
+    const unlock = () => C.unlockAudio();
+    window.addEventListener('pointerup', unlock, true);
+    window.addEventListener('keydown', unlock, true);
     const local = C.loadLocal();
     // A brand-new device starts at updatedAt 0, so it never overwrites the synced system.
     const s = local ? E.normalize(local) : { ...E.fresh(), updatedAt: 0 };
@@ -159,6 +166,8 @@ export default function Home() {
       if (document.visibilityState === 'visible') pull();
     }, POLL_MS);
     return () => {
+      window.removeEventListener('pointerup', unlock, true);
+      window.removeEventListener('keydown', unlock, true);
       document.removeEventListener('visibilitychange', onVis);
       clearInterval(poll);
     };
@@ -265,44 +274,69 @@ export default function Home() {
   const openDoor = () => {
     cancelAnimationFrame(holdRef.current.raf);
     ringRef.current?.setAttribute('stroke-dasharray', '0 100');
-    C.play('release');
     C.buzz(100);
+    setPressed(false); // springs back to full size while the finger is still down
     const { state } = E.openDoor(sRef.current, { id: newId(), task: task.trim(), step: step.trim() });
     commit(state);
     showRun(state.run);
     setView('running');
   };
 
-  const beginHold = (e) => {
-    if (viewRef.current !== 'idle') return;
-    C.unlockAudio();
-    if (!task.trim()) {
-      taskRef.current?.focus();
-      C.buzz([10, 60, 10]);
-      return;
-    }
+  // A quick tap is a fidget reset. Holding past TAP_MS with a task starts the ring.
+  const press = (e) => {
+    if (viewRef.current !== 'idle' || holdRef.current.down) return;
     e?.preventDefault?.();
+    C.unlockAudio();
     if (document.activeElement && document.activeElement !== discRef.current) document.activeElement.blur();
+    holdRef.current.down = true;
+    holdRef.current.start = performance.now();
     C.play('click');
     C.buzz(20);
-    setView('holding');
-    holdRef.current.start = performance.now();
+    setPressed(true);
+    listenForRelease(e?.type === 'keydown');
+    const hasTask = Boolean(task.trim());
     const tick = (now) => {
-      const p = Math.min(1, (now - holdRef.current.start) / HOLD_MS);
-      ringRef.current?.setAttribute('stroke-dasharray', `${p * 100} 100`);
-      if (p >= 1) {
-        openDoor();
-        return;
+      const t = now - holdRef.current.start;
+      if (t >= TAP_MS) {
+        if (!hasTask) {
+          C.buzz([10, 60, 10]);
+          return;
+        }
+        if (viewRef.current === 'idle') setView('holding');
+        const p = Math.min(1, (t - TAP_MS) / (HOLD_MS - TAP_MS));
+        ringRef.current?.setAttribute('stroke-dasharray', `${p * 100} 100`);
+        if (p >= 1) {
+          openDoor();
+          return;
+        }
       }
       holdRef.current.raf = requestAnimationFrame(tick);
     };
     holdRef.current.raf = requestAnimationFrame(tick);
   };
-  const cancelHold = () => {
-    if (viewRef.current !== 'holding') return;
+
+  const release = () => {
+    holdRef.current.down = false;
     cancelAnimationFrame(holdRef.current.raf);
-    ringRef.current?.setAttribute('stroke-dasharray', '0 100');
-    setView('idle');
+    setPressed(false);
+    C.unlockAudio();
+    C.play('release');
+    C.buzz(100);
+    if (viewRef.current === 'holding') {
+      ringRef.current?.setAttribute('stroke-dasharray', '0 100');
+      setView('idle');
+    }
+  };
+
+  // Window-level, so the release still registers after the door opens under the finger.
+  const listenForRelease = (fromKey) => {
+    const types = fromKey ? ['keyup', 'blur'] : ['pointerup', 'pointercancel', 'blur'];
+    const onUp = (ev) => {
+      if (ev.type === 'keyup' && ev.key !== ' ' && ev.key !== 'Enter') return;
+      types.forEach((t) => window.removeEventListener(t, onUp, true));
+      release();
+    };
+    types.forEach((t) => window.addEventListener(t, onUp, true));
   };
 
   // Abort takes two taps, so it's always a real choice.
@@ -385,7 +419,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
 
-      <main className={`app ${view}${ready ? ' ready' : ''}${isResult ? ' result' : ''}`}>
+      <main className={`app ${view}${ready ? ' ready' : ''}${isResult ? ' result' : ''}${pressed ? ' pressed' : ''}`}>
         <section className="top">
           {idleish ? (
             <div>
@@ -447,23 +481,18 @@ export default function Home() {
               ref={discRef}
               className="disc"
               aria-label="Hold to start a two-minute door"
-              disabled={!idleish}
+              aria-disabled={!idleish}
               onPointerDown={(e) => {
+                if (e.button > 0) return;
                 e.currentTarget.setPointerCapture?.(e.pointerId);
-                beginHold(e);
+                press(e);
               }}
-              onPointerUp={cancelHold}
-              onPointerCancel={cancelHold}
-              onLostPointerCapture={cancelHold}
               onContextMenu={(e) => e.preventDefault()}
               onKeyDown={(e) => {
                 if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
                   e.preventDefault();
-                  beginHold(e);
+                  press(e);
                 }
-              }}
-              onKeyUp={(e) => {
-                if (e.key === ' ' || e.key === 'Enter') cancelHold();
               }}
             />
             {isResult && result && (

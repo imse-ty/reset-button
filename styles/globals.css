@@ -45,9 +45,12 @@ button.disc{
   background:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line);
   touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
   transition:transform .6s cubic-bezier(.34,1.56,.64,1);
+  /* spring, damping 0.5: matches the original framer-motion { type:'spring', duration:.6, bounce:.5 } */
+  transition:transform .6s linear(0,0.032,0.116,0.235,0.373,0.517,0.657,0.786,0.898,0.99,1.061,1.112,1.144,1.16,1.162,1.154,1.139,1.118,1.095,1.072,1.049,1.029,1.012,0.998,0.987,0.98,0.975,0.974,0.974,0.976,0.978,0.982,0.986,0.99,0.993,0.996,0.999,1.001,1.003,1.004,1);
 }
 button.disc:focus-visible{outline:3px solid var(--fg);outline-offset:22px}
-.holding button.disc{transform:scale(.9);transition:transform 1.6s cubic-bezier(.2,.8,.2,1)}
+@media (hover:hover){.idle button.disc:hover{transform:scale(1.1)}}
+.pressed button.disc,.pressed button.disc:hover{transform:scale(.6)}
 .idle:not(.ready) button.disc{background:var(--line)}
 .result button.disc{background:transparent!important;cursor:default}
 .time{position:absolute;left:0;right:0;bottom:-40px;text-align:center;font-size:1rem;color:var(--muted);font-variant-numeric:tabular-nums}
