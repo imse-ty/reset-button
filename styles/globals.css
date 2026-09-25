@@ -1,0 +1,103 @@
+:root{
+  --bg:#EDEBEF; --fg:#131214; --muted:#6E6A73; --line:#D3D0D7; --field:#E3E0E6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#131214;--fg:#EDEBEF;--muted:#8E8A94;--line:#2B292E;--field:#1D1C1F;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#131214;--fg:#EDEBEF;--muted:#8E8A94;--line:#2B292E;--field:#1D1C1F;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;height:100%;background:var(--bg);color:var(--fg);
+  font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
+}
+.app{
+  height:100%;max-width:520px;margin:0 auto;
+  display:grid;grid-template-rows:auto 1fr auto;
+  padding:24px 24px 18px;gap:10px;
+}
+.top{min-height:128px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+.field{display:block}
+.field input{
+  width:100%;border:0;outline:0;background:transparent;color:var(--fg);
+  font:inherit;padding:6px 0 8px;border-bottom:1.5px solid var(--line);transition:border-color .2s;
+}
+.field input:focus{border-bottom-color:var(--fg)}
+.field input::placeholder{color:var(--muted);opacity:1}
+#task,.shown-task{font-size:clamp(1.6rem,6.4vw,2.1rem);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+#step{font-size:1.05rem}
+.field span{display:block;font-size:.85rem;color:var(--muted)}
+.shown-task{margin:0;overflow-wrap:anywhere}
+.shown-step{margin:0;font-size:1.05rem;color:var(--muted)}
+
+.stage{display:grid;place-items:center;position:relative;min-height:0}
+.wrap{--size:min(70vw,40vh,340px);width:var(--size);height:var(--size);position:relative}
+.ring{position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);transform:rotate(-90deg);pointer-events:none}
+.ring circle{fill:none;stroke:var(--fg);stroke-width:3;stroke-linecap:round;opacity:0;transition:opacity .15s}
+.holding .ring circle{opacity:1}
+button.disc{
+  all:unset;cursor:pointer;display:block;width:100%;height:100%;border-radius:50%;
+  background:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line);
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+  transition:transform .6s cubic-bezier(.34,1.56,.64,1);
+}
+button.disc:focus-visible{outline:3px solid var(--fg);outline-offset:22px}
+.holding button.disc{transform:scale(.9);transition:transform 1.6s cubic-bezier(.2,.8,.2,1)}
+.idle:not(.ready) button.disc{background:var(--line)}
+.result button.disc{background:transparent!important;cursor:default}
+.time{position:absolute;left:0;right:0;bottom:-40px;text-align:center;font-size:1rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.inner{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:14%;pointer-events:none}
+.inner p{margin:0;font-size:clamp(1.25rem,5.2vw,1.6rem);font-weight:600;letter-spacing:-.015em;line-height:1.2}
+.inner small{display:block;margin-top:6px;font-size:.95rem;font-weight:400;color:var(--muted);letter-spacing:0;line-height:1.35}
+
+.bottom{display:flex;flex-direction:column;justify-content:flex-end;gap:12px}
+.actions{display:flex;gap:10px}
+.btn{all:unset;cursor:pointer;flex:1;text-align:center;padding:15px 16px;border-radius:999px;font-weight:600;font-size:1rem;transition:background .2s,color .2s}
+.btn.primary{background:var(--fg);color:var(--bg)}
+.btn.quiet{box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.armed{background:var(--muted);color:var(--bg);box-shadow:none}
+.btn:focus-visible,.link:focus-visible{outline:3px solid var(--fg);outline-offset:3px}
+.link{all:unset;cursor:pointer;color:var(--muted);font-size:.85rem;text-decoration:underline;text-underline-offset:3px}
+.hint{text-align:center;color:var(--muted);font-size:.95rem;margin:0}
+
+/* energy: solid = good (ordered), dotted = bad (scattered heat), hollow = staked in the door */
+.energy{display:grid;gap:7px}
+.elabels{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.elabels b{color:var(--fg);font-weight:600}
+.bar{display:flex;height:14px;border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--line)}
+.seg{height:100%;transition:width .7s cubic-bezier(.34,1.3,.64,1)}
+.seg.good{background:var(--fg)}
+.seg.staked{box-shadow:inset 0 0 0 2px var(--fg);border-radius:0 999px 999px 0}
+.seg.bad{background-image:radial-gradient(var(--fg) 1.1px,transparent 1.5px);background-size:5px 5px;opacity:.55}
+.stats{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{color:var(--fg);font-weight:600}
+.sync{margin:0;text-align:center;font-size:.8rem;color:var(--muted)}
+
+dialog{border:0;border-radius:22px;padding:26px 24px 20px;max-width:min(440px,calc(100vw - 32px));background:var(--bg);color:var(--fg);box-shadow:0 0 0 1.5px var(--line)}
+dialog::backdrop{background:rgba(19,18,20,.45)}
+dialog h2{margin:0 0 6px;font-size:1.4rem;letter-spacing:-.015em}
+dialog p{margin:0 0 14px;color:var(--muted);line-height:1.45}
+dialog ol{margin:0 0 18px;padding-left:1.2em;line-height:1.45}
+dialog li{margin-bottom:8px}
+
+[hidden]{display:none!important}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.pop{display:inline-block;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* v2 additions */
+#__next{height:100%}
+.syncrow{display:flex;justify-content:center;gap:10px;align-items:baseline}
+dialog .fieldset{display:grid;gap:8px;margin:0 0 16px}
+dialog input{font:inherit;color:var(--fg);background:var(--field);border:0;border-radius:12px;padding:12px 14px;outline:0;width:100%}
+dialog input:focus-visible{outline:2px solid var(--fg)}
+dialog .row{display:flex;gap:10px}
+dialog .note{font-size:.88rem;margin:0 0 12px}
+dialog h3{margin:0 0 4px;font-size:1.05rem}
+dialog hr{border:0;border-top:1.5px solid var(--line);margin:4px 0 16px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
